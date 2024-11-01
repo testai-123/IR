@@ -1,48 +1,40 @@
 import nltk
-from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords 
 
-# Download NLTK resources (only need to run once)
-nltk.download('punkt')
-nltk.download('stopwords')
+nltk.download("punkt")
+nltk.download("stopwords")
 
-# Stop words
-stop_words = set(stopwords.words('english'))
+stop_words = set(stopwords.words("english"))
 
-# Document dictionary
-doc_dict = [
-    ["d1", "Welcome to hotel heaven such a lovely place"],
-    ["d2", "She is buying a stairway to heaven"],
-    ["d3", "Don't make it bad"],
-    ["d4", "Take me to the heaven"]
+
+doc_dict =[
+    ["d1","NLP has various text preprocessing techniques"],
+    ["d2","Text Preprocessing techniques includes Tokenization, Stemming, Stopwords Removal, etc"],
+    ["d3","Tokenization meaning breaking down of sentences into small individual tokens"],
+    ["d4","NLP techniques forms a base for GenAI"]
 ]
-
-# Get query from user
-query = input("Enter query: ")
-
-# Lists for storing matches
-doc_with_exact_match = []
+    
 doc_with_best_match = []
+doc_with_exact_match = []
 
-# Tokenize the query
-query_tokens = [word.lower() for word in word_tokenize(query)]
+query = input("Enter the query :")
 
-# Process each document
+query_tokens = [word.lower() for word in word_tokenize(query) if word.lower() not in stop_words]
+
 for doc_id, content in doc_dict:
-    # Tokenize and filter stop words from the document
+    
     content_tokens = [word.lower() for word in word_tokenize(content) if word.lower() not in stop_words]
-
-    # Check for best match (at least one matching word)
-    if any(word in content_tokens for word in query_tokens):
-        doc_with_best_match.append(doc_id)
-
-    # Check for exact match (all query words must match)
+    
+    matched_words = [word for word in query_tokens if word in content_tokens]
+    
+    if matched_words:
+        doc_with_best_match.append((doc_id,matched_words))
+        
+    
     if all(word in content_tokens for word in query_tokens):
-        # Move from best match to exact match
-        doc_with_best_match.remove(doc_id)
+        doc_with_best_match.remove((doc_id,matched_words))
         doc_with_exact_match.append(doc_id)
-
-# Display the results
-print("Documents with best match:", doc_with_best_match)
-print("Documents with exact match:", doc_with_exact_match)
-
+        
+print("Exact Match :",doc_with_exact_match)
+print("Best Match :",doc_with_best_match)    
