@@ -2,30 +2,41 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
 import scipy.cluster.hierarchy as sch
+from sklearn.datasets import load_iris
 
-# Load the dataset
-df = pd.read_csv('Mall_Customers.csv')
-X = df[['Age', 'Annual Income (k$)', 'Spending Score (1-100)']].values
+# Load the Iris dataset
+iris = load_iris()
+X = iris.data  
 
 # Plot the dendrogram
-sch.dendrogram(sch.linkage(X, method='ward'))
-plt.title('Dendrogram')
-plt.xlabel('Customers')
+plt.figure(figsize=(10, 5))
+dendrogram = sch.dendrogram(sch.linkage(X, method='ward'))
+
+plt.axhline(y=7, color='r', linestyle='--')  # Adjust y value for better visualization
+
+plt.title('Dendrogram for Iris Dataset with Cut Line')
+plt.xlabel('Samples')
 plt.ylabel('Euclidean Distances')
 plt.show()
 
 # Perform Agglomerative Clustering
-n_clusters = 5
+n_clusters = 3  # As there are 3 species of Iris
 hc = AgglomerativeClustering(n_clusters=n_clusters, linkage='ward')
-df['Cluster'] = hc.fit_predict(X)
+labels = hc.fit_predict(X)
 
-# Plot the clusters
+# Create a DataFrame for visualization
+iris_df = pd.DataFrame(data=X, columns=iris.feature_names)
+iris_df['Cluster'] = labels
+
+# Plot the clusters using the first two features (sepal length and sepal width)
+plt.figure(figsize=(10, 5))
 for cluster in range(n_clusters):
-    plt.scatter(df[df['Cluster'] == cluster]['Annual Income (k$)'],
-                df[df['Cluster'] == cluster]['Spending Score (1-100)'],
+    plt.scatter(iris_df[iris_df['Cluster'] == cluster]['sepal length (cm)'],
+                iris_df[iris_df['Cluster'] == cluster]['sepal width (cm)'],
                 label=f'Cluster {cluster}')
 
-plt.xlabel('Annual Income (k$)')
-plt.ylabel('Spending Score (1-100)')
+plt.title('Agglomerative Clustering on Iris Dataset')
+plt.xlabel('Sepal Length (cm)')
+plt.ylabel('Sepal Width (cm)')
 plt.legend()
 plt.show()
