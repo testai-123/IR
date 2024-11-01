@@ -1,40 +1,41 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.cluster import AgglomerativeClustering
-import scipy.cluster.hierarchy as sch
+import pandas as pd 
 from sklearn.datasets import load_iris
+import seaborn as sns
+import matplotlib.pyplot as plt
+import scipy.cluster.hierarchy as sch
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.metrics import adjusted_rand_score
 
-# Load the Iris dataset
+# Load 
 iris = load_iris()
-X = iris.data  
+x = iris.data
+true_labels = iris.target
 
-# Plot the dendrogram
-plt.figure(figsize=(10, 5))
-dendrogram = sch.dendrogram(sch.linkage(X, method='ward'))
+# Get Number of Clusters
+plt.figure(figsize=(10,5))
+dendrogram = sch.dendrogram(sch.linkage(x,method='ward'))
+plt. axhline(y=7,color='r', linestyle='--')
 
-plt.axhline(y=7, color='r', linestyle='--')  # Adjust y value for better visualization
-
-plt.title('Dendrogram for Iris Dataset with Cut Line')
-plt.xlabel('Samples')
-plt.ylabel('Euclidean Distances')
+plt.title("Dendrogram for Iris Dataset")
+plt.xlabel("Samples")
+plt.ylabel("Euclidean Distance")
 plt.show()
 
-# Perform Agglomerative Clustering
-n_clusters = 3  # As there are 3 species of Iris
-hc = AgglomerativeClustering(n_clusters=n_clusters, linkage='ward')
-labels = hc.fit_predict(X)
+# Train and Predict
+n = 3 
+hc = AgglomerativeClustering(n_clusters=n,linkage='ward')
+labels = hc.fit_predict(x)
 
-# Create a DataFrame for visualization
-iris_df = pd.DataFrame(data=X, columns=iris.feature_names)
-iris_df['Cluster'] = labels
+# Accuracy
+ari = adjusted_rand_score(true_labels, labels)
+print(f'Adjusted Rand Index: {ari:.3f}')
 
-# Plot the clusters using the first two features (sepal length and sepal width)
+df = pd.DataFrame(data=x,columns=iris.feature_names)
+df['Cluster'] = labels
+
+# Plot 
 plt.figure(figsize=(10, 5))
-for cluster in range(n_clusters):
-    plt.scatter(iris_df[iris_df['Cluster'] == cluster]['sepal length (cm)'],
-                iris_df[iris_df['Cluster'] == cluster]['sepal width (cm)'],
-                label=f'Cluster {cluster}')
-
+sns.scatterplot(data=df, x='sepal length (cm)', y='sepal width (cm)', hue='Cluster', palette='Set1')
 plt.title('Agglomerative Clustering on Iris Dataset')
 plt.xlabel('Sepal Length (cm)')
 plt.ylabel('Sepal Width (cm)')
