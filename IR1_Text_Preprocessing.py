@@ -1,9 +1,10 @@
 import nltk
 from nltk.corpus import stopwords
+import string
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 
-# Download NLTK resources (only need to run once)
+# Download NLTK resources
 nltk.download('punkt')
 nltk.download('stopwords')
 
@@ -15,6 +16,10 @@ def preprocess_text(text):
     # Convert to lowercase
     words = [word.lower() for word in words]
     print("After Lowercasing:", words)
+
+    # Remove Punctuations 
+    words = [word for word in words if word not in string.punctuation]
+    print("After Removing the Punctuations :",words)
 
     # Remove stop words
     stop_words = set(stopwords.words('english'))
@@ -31,7 +36,7 @@ def preprocess_text(text):
     return processed_text
 
 # Sample text
-text = "This is a simple example to demonstrate text preprocessing, including stop word removal and stemming."
+text = "This is a simple example to demonstrate text preprocessing, including stop word removal!! %and stemming."
 
 # Preprocess the text
 processed_text = preprocess_text(text)
@@ -39,4 +44,3 @@ processed_text = preprocess_text(text)
 # Print the final result
 print("\nOriginal Text:", text)
 print("Processed Text:", processed_text)
-
